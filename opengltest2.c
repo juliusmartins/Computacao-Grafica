@@ -39,8 +39,8 @@ void display(void)
 	glColor3f(1.0,0.0,0.0);
 	glBegin(GL_TRIANGLES);
 		glVertex2f(250.0f,250.0f);
-		glVertex2f(270.0f,200.0f);
-		glVertex2f(270.0f,300.0f);
+		glVertex2f(300.0f,225.0f);
+		glVertex2f(300.0f,275.0f);
 	glEnd();
 
 	glColor3f(1.0,1.0,0.0);
@@ -53,8 +53,8 @@ void display(void)
 	glColor3f(1.0,0.0,1.0);
 	glBegin(GL_TRIANGLES);
 		glVertex2f(250.0f,250.0f);
-		glVertex2f(230.0f,300.0f);
-		glVertex2f(230.0f,200.0f);
+		glVertex2f(200.0f,275.0f);
+		glVertex2f(200.0f,220.0f);
 	glEnd();
 
 	glFlush();
