@@ -1,0 +1,151 @@
+#include <iostream>
+#include <GL/glut.h>
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <stdlib.h>
+
+using namespace std;
+
+static int year=0,day=0;
+
+#define PI 3.1415
+
+GLint WIDTH =320;
+GLint HEIGHT=240;
+
+GLint fatias=30;
+GLint pilhas=30;
+GLint raioEsfera=1.5;
+
+GLfloat obs[3]={0.0,7.0,0.0};
+GLfloat olho[3]={0.0,3.0,0.0};
+
+GLfloat plano_difusa[]    = { 0.5, 0.5, 0.0, 1.0 };
+GLfloat plano_especular[] = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat plano_brilho[]    = { 50.0 };
+
+GLfloat mat_a_difusa[]    = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat mat_a_especular[] = { 1.0, 1.0, 1.0, 1.0 };
+GLfloat mat_a_brilho[]    = { 50.0 };
+
+GLfloat mat_b_difusa[]    = { 0.7, 0.7, 0.7, 0.5 };
+GLfloat mat_b_especular[] = { 1.0, 1.0, 1.0, 0.5 };
+GLfloat mat_b_brilho[]    = { 50.0 };
+
+GLfloat posicao_luz0[]    = { 0.0, 10.0, 0.0, 1.0};
+GLfloat cor_luz0[]        = { 1.0, 1.0, 1.0, 1.0};
+GLfloat cor_luz0_amb[]    = { 0.3, 0.3, 0.3, 1.0};
+
+GLfloat posicao_luz1[]    = { 0.0, 10.0, 5.0, 1.0};
+GLfloat cor_luz1[]        = { 0.0, 0.0, 1.0, 1.0};
+GLfloat direcao_luz1[]    = { 0.0, -10.0, -5.0, 1.0};
+GLint   spot_luz1         = 30;
+
+GLfloat sem_cor[]         = { 0.0, 0.0, 0.0, 1.0};
+  
+GLint gouraud=0;
+
+GLfloat tetaxz=0;
+GLfloat raioxz=6;
+
+void init(void)
+{
+  glClearColor(0.0,0.0,0.0,0.0);
+  gouraud=1;
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+  glLightfv(GL_LIGHT0, GL_DIFFUSE, cor_luz0);
+  glLightfv(GL_LIGHT0, GL_SPECULAR, cor_luz0);
+  glLightfv(GL_LIGHT0, GL_AMBIENT, cor_luz0_amb);
+  glLightfv(GL_LIGHT0, GL_POSITION, posicao_luz0);
+
+  glLightfv(GL_LIGHT1, GL_DIFFUSE, cor_luz1);
+  glLightfv(GL_LIGHT1, GL_SPECULAR, cor_luz1);
+  glLightf (GL_LIGHT1, GL_SPOT_CUTOFF, spot_luz1);
+  glLightfv(GL_LIGHT1, GL_POSITION, posicao_luz1);
+  glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, direcao_luz1);
+
+  glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  glEnable(GL_LIGHT1);
+
+  glEnable(GL_AUTO_NORMAL);
+  glEnable(GL_NORMALIZE);
+}
+
+void display(void)
+{
+  glClear(GL_COLOR_BUFFER_BIT);
+  glColor3f(1.0,1.0,1.0);
+
+  glPushMatrix();
+    glRotatef((GLfloat) year,1.0,0.0,0.0);
+    glRotatef((GLfloat) day,0.0,0.0,1.0);
+    glutWireSphere(1.0,1000,1000); /*desenha o sol*/
+  glPopMatrix();
+
+  glPushMatrix();
+    glRotatef((GLfloat) year,0.0,1.0,0.0);
+    glTranslatef(2.0,0.0,0.0);//translada a partir do novo sistema de coordenadas
+    glRotatef((GLfloat)day,0.0,1.0,0.0);
+    glutWireSphere(0.2,1000,1000); /*desenha um planeta */
+  glPopMatrix();
+
+  glutSwapBuffers(); //pois estamos adotando o GLUT_DOUBLE
+
+}
+
+void reshape(int w,int h)
+{
+  glViewport(0,0,(GLsizei) w,(GLsizei) h);
+
+  glMatrixMode(GL_MODELVIEW);
+  glLoadIdentity();
+
+  gluPerspective(60.0,(GLfloat) w/(GLfloat) h,1.0,20.0);
+  gluLookAt(0.0,0.0,5.0,0.0,0.0,0.0,0.0,1.0,0.0); //posição da camera
+}
+
+void keyboard(unsigned char key,int x,int y)
+{
+  switch(key){
+    case 'd':
+      day = (day+10)%360;//%valor do resto
+      glutPostRedisplay();//redesenha a cena com novas coordenadas,é executado no glutM
+      break;
+    case 'D':
+      day = (day-10)%360;
+      glutPostRedisplay();
+      break;
+    case 'y':
+      year = (year+5)%360;
+      glutPostRedisplay();
+      break;
+    case 'Y':
+      year = (year+5)%360;
+      glutPostRedisplay();
+      break;
+    case 27:
+      exit(0);
+      break;
+    default:
+      break;
+  }
+}
+
+int main(int argc,char** argv)
+{
+  glutInit(&argc,argv);
+  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB);
+  glutInitWindowSize(500,500);
+  glutInitWindowPosition(100,100);
+  glutCreateWindow("Rotação de Planetas");
+  init();
+  glutDisplayFunc(display);
+  glutReshapeFunc(reshape);
+  glutKeyboardFunc(keyboard);
+  glutMainLoop();
+  return 0;
+}
